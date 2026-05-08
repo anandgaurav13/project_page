@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BBAU Smart Campus Navigation System</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        :root {
+            --color-primary: #1e40af;
+            --color-primary-dark: #1e3a8a;
+            --color-primary-light: #3b82f6;
+            --color-secondary: #60a5fa;
+            --color-accent: #dbeafe;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: white !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #1e40af, #1e3a8a);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .nav-link {
+            color: #64748b !important;
+            transition: all 0.3s;
+            border-radius: 8px;
+            padding: 8px 16px !important;
+            margin: 0 4px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: #dbeafe;
+            color: #1e40af !important;
+        }
+
+        /* Page Sections */
+        .page-section {
+            display: none;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            height: 500px;
+            background: linear-gradient(135deg, #1e3a8a, #1e40af, #3b82f6);
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background-image: url('bbau logo.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.2;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .search-box {
+            background: white;
+            border-radius: 16px;
+            padding: 8px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+        }
+
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        .quick-link-card {
+            text-align: center;
+            padding: 16px;
+            border-radius: 12px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .quick-link-card:hover {
+            background-color: #f8fafc;
+        }
+
+        .quick-link-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            color: white;
+            font-size: 24px;
+        }
+
+        /* Gradient Backgrounds */
+        .bg-gradient-blue {
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+        }
+
+        .bg-gradient-purple {
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+        }
+
+        .bg-gradient-green {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .bg-gradient-orange {
+            background: linear-gradient(135deg, #f97316, #ea580c);
+        }
+
+        .bg-gradient-pink {
+            background: linear-gradient(135deg, #ec4899, #db2777);
+        }
+
+        .bg-gradient-indigo {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+        }
+
+        /* Map Styles */
+        .campus-map {
+            height: 600px;
+            background: linear-gradient(135deg, #f0fdf4, #dbeafe, #f1f5f9);
+            position: relative;
+            border-radius: 16px;
+        }
+
+        .map-marker {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .map-marker:hover {
+            transform: scale(1.25);
+        }
+
+        .map-legend {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(10px);
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Department Cards */
+        .dept-category-header {
+            padding: 24px;
+            color: white;
+            border-radius: 16px 16px 0 0;
+        }
+
+        /* Badge Styles */
+        .badge-custom {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, #1e3a8a, #1e40af, #1e3a8a);
+            color: white;
+            margin-top: 48px;
+        }
+
+        footer a {
+            color: #dbeafe;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        footer a:hover {
+            color: white;
+        }
+
+        /* Announcement Badge */
+        .announcement-card {
+            background: #dbeafe;
+            border: 1px solid #93c5fd;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        /* Stats Card */
+        .stat-card {
+            text-align: center;
+            padding: 24px;
+            border-radius: 12px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-section {
+                height: 400px;
+            }
+            
+            h1 {
+                font-size: 1.75rem;
+            }
+        }
+
+        /* Utility Classes */
+        .rounded-xl {
+            border-radius: 16px;
+        }
+
+        .rounded-2xl {
+            border-radius: 20px;
+        }
+
+        .shadow-md {
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .shadow-lg {
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#" onclick="navigateTo('home')">
+                <div class="brand-logo">BBAU</div>
+                <div class="d-none d-md-block">
+                    <div style="color: #1e3a8a; font-weight: 600;">BBAU Campus Navigator</div>
+                    <div style="font-size: 12px; color: #64748b;">Smart Navigation System</div>
+                </div>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" onclick="navigateTo('home')" data-page="home">
+                            <i class="bi bi-house-door me-1"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="navigateTo('map')" data-page="map">
+                            <i class="bi bi-map me-1"></i> Campus Map
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="navigateTo('departments')" data-page="departments">
+                            <i class="bi bi-building me-1"></i> Departments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="navigateTo('routes')" data-page="routes">
+                            <i class="bi bi-signpost-2 me-1"></i> Navigation
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="navigateTo('facilities')" data-page="facilities">
+                            <i class="bi bi-building-gear me-1"></i> Facilities
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="navigateTo('bus')" data-page="bus">
+                            <i class="bi bi-bus-front me-1"></i> Bus Schedule
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="navigateTo('about')" data-page="about">
+                            <i class="bi bi-info-circle me-1"></i> About
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="navigateTo('contact')" data-page="contact">
+                            <i class="bi bi-telephone me-1"></i> Contact
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">
+                            <i class="bi bi-person"></i> Login
+                         </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HOME PAGE -->
+    <div id="home-page" class="page-section active">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <div class="container">
+                    <h1 class="display-4 fw-bold mb-3">BBAU Smart Campus Navigation System</h1>
+                    <p class="lead mb-4" style="color: #dbeafe;">
+                        Discover and navigate Babasaheb Bhimrao Ambedkar University campus with ease
+                    </p>
+                    <div class="search-box col-lg-8 mx-auto">
+                        <form action="/search" method="POST">
+    <div class="input-group">
+        <span class="input-group-text bg-white border-0">
+            <i class="bi bi-search"></i>
+        </span>
+        <input type="text" name="query" class="form-control border-0"
+               placeholder="Search for classrooms, departments, hostels...">
+        <button type="submit" class="btn btn-primary px-4">Search</button>
+    </div>
+</form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="container" style="margin-top: -80px; position: relative; z-index: 10;">
+            <div class="card shadow-lg p-4 mb-5">
+                <h3 class="mb-4" style="color: #1e3a8a;">Quick Access</h3>
+                <div class="row g-3">
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <div class="quick-link-card" onclick="navigateTo('departments')">
+                            <div class="quick-link-icon bg-gradient-blue">
+                                <i class="bi bi-building"></i>
+                            </div>
+                            <small>Academic Blocks</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <div class="quick-link-card" onclick="navigateTo('facilities')">
+                            <div class="quick-link-icon bg-gradient-purple">
+                                <i class="bi bi-building-gear"></i>
+                            </div>
+                            <small>Hostels</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <div class="quick-link-card" onclick="navigateTo('facilities')">
+                            <div class="quick-link-icon bg-gradient-green">
+                                <i class="bi bi-book"></i>
+                            </div>
+                            <small>Library</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <div class="quick-link-card" onclick="navigateTo('facilities')">
+                            <div class="quick-link-icon bg-gradient-orange">
+                                <i class="bi bi-trophy"></i>
+                            </div>
+                            <small>Sports Complex</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <div class="quick-link-card" onclick="navigateTo('facilities')">
+                            <div class="quick-link-icon bg-gradient-pink">
+                                <i class="bi bi-cup-hot"></i>
+                            </div>
+                            <small>Cafeteria</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <div class="quick-link-card" onclick="navigateTo('contact')">
+                            <div class="quick-link-icon bg-gradient-indigo">
+                                <i class="bi bi-briefcase"></i>
+                            </div>
+                            <small>VC Office</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="row g-4 mb-5">
+                <!-- Announcements -->
+                <div class="col-lg-8">
+                    <div class="card p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <i class="bi bi-bell text-primary fs-4 me-2"></i>
+                            <h3 style="color: #1e3a8a; margin: 0;">Campus Announcements</h3>
+                        </div>
+                        <div class="announcement-card mb-3">
+                            <small class="text-primary">Nov 25, 2025</small>
+                            <h5 class="mt-2 mb-2" style="color: #1e3a8a;">Campus Shuttle Route Update</h5>
+                            <p class="mb-0 text-secondary">New shuttle timing from Hostel Block to Library. Check Bus Schedule page.</p>
+                        </div>
+                        <div class="announcement-card mb-3">
+                            <small class="text-primary">Nov 24, 2025</small>
+                            <h5 class="mt-2 mb-2" style="color: #1e3a8a;">Annual Sports Week</h5>
+                            <p class="mb-0 text-secondary">Registration open for all sports events. Visit Sports Complex for details.</p>
+                        </div>
+                        <div class="announcement-card">
+                            <small class="text-primary">Nov 22, 2025</small>
+                            <h5 class="mt-2 mb-2" style="color: #1e3a8a;">Library Extended Hours</h5>
+                            <p class="mb-0 text-secondary">Central Library now open until 11 PM during examination period.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <div class="card bg-gradient-blue text-white p-4 mb-4">
+                        <h5 class="mb-3">Campus Overview</h5>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span style="color: #dbeafe;">Academic Blocks</span>
+                            <strong>12</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span style="color: #dbeafe;">Departments</span>
+                            <strong>24</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span style="color: #dbeafe;">Hostels</span>
+                            <strong>6</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span style="color: #dbeafe;">Facilities</span>
+                            <strong>15+</strong>
+                        </div>
+                    </div>
+
+                    <div class="card p-4" onclick="navigateTo('map')" style="cursor: pointer;">
+                        <h5 style="color: #1e3a8a;" class="mb-2">Explore Campus Map</h5>
+                        <p class="text-secondary small mb-3">
+                            View interactive map with all locations and landmarks
+                        </p>
+                        <span class="text-primary small">View Map →</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CAMPUS MAP PAGE -->
+    <div id="map-page" class="page-section">
+        <div class="container py-5">
+            <div class="mb-4">
+                <h2 style="color: #1e3a8a;">Campus Map</h2>
+                <p class="text-secondary">Interactive map of BBAU Vidya Vihar Campus, Raebareli Road, Lucknow</p>
+            </div>
+
+            <!-- Search -->
+            <div class="card p-3 mb-4">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-0">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control border-0" placeholder="Search for a location on campus...">
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card p-4 mb-4">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="bi bi-funnel text-primary me-2"></i>
+                    <span>Filter Locations</span>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-primary badge-custom">
+                        <i class="bi bi-geo-alt me-1"></i> All Locations
+                    </button>
+                    <button class="btn btn-outline-secondary badge-custom">
+                        <i class="bi bi-building me-1"></i> Departments
+                    </button>
+                    <button class="btn btn-outline-secondary badge-custom">
+                        <i class="bi bi-building-gear me-1"></i> Hostels
+                    </button>
+                    <button class="btn btn-outline-secondary badge-custom">
+                        <i class="bi bi-bank me-1"></i> Facilities
+                    </button>
+                    <button class="btn btn-outline-secondary badge-custom">
+                        <i class="bi bi-briefcase me-1"></i> Administration
+                    </button>
+                </div>
+            </div>
+
+            <!-- Map -->
+            <div class="card">
+                <div class="campus-map">
+                    <!-- Map Markers -->
+                    <div class="map-marker" style="top: 20%; left: 30%; background: #f97316;">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+                    <div class="map-marker" style="top: 30%; left: 50%; background: #10b981;">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+                    <div class="map-marker" style="top: 45%; left: 25%; background: #3b82f6;">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+                    <div class="map-marker" style="top: 50%; left: 60%; background: #3b82f6;">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+                    <div class="map-marker" style="top: 65%; left: 20%; background: #a855f7;">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+                    <div class="map-marker" style="top: 70%; left: 45%; background: #a855f7;">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+
+                    <!-- Campus Label -->
+                    <div style="position: absolute; top: 16px; left: 16px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); padding: 12px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <div style="color: #1e3a8a; font-weight: 600;">BBAU Vidya Vihar Campus</div>
+                        <small class="text-secondary">Raebareli Road, Lucknow</small>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="map-legend">
+                        <small class="d-block mb-2 fw-bold">Legend</small>
+                        <div class="d-flex align-items-center mb-1">
+                            <div style="width: 16px; height: 16px; background: #3b82f6; border-radius: 50%; margin-right: 8px;"></div>
+                            <small class="text-secondary">Departments</small>
+                        </div>
+                        <div class="d-flex align-items-center mb-1">
+                            <div style="width: 16px; height: 16px; background: #a855f7; border-radius: 50%; margin-right: 8px;"></div>
+                            <small class="text-secondary">Hostels</small>
+                        </div>
+                        <div class="d-flex align-items-center mb-1">
+                            <div style="width: 16px; height: 16px; background: #10b981; border-radius: 50%; margin-right: 8px;"></div>
+                            <small class="text-secondary">Facilities</small>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div style="width: 16px; height: 16px; background: #f97316; border-radius: 50%; margin-right: 8px;"></div>
+                            <small class="text-secondary">Administration</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEPARTMENTS PAGE -->
+    <div id="departments-page" class="page-section">
+        <div class="container py-5">
+            <div class="mb-4">
+                <h2 style="color: #1e3a8a;">Academic Departments</h2>
+                <p class="text-secondary">Explore the diverse academic departments at BBAU</p>
+            </div>
+
+            <!-- Science -->
+            <div class="card mb-4">
+                <div class="dept-category-header bg-gradient-blue">
+                    <div class="d-flex align-items-center">
+                        <div style="width: 48px; height: 48px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 16px;">
+                            <i class="bi bi-radioactive fs-4"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-1">Science</h4>
+                            <p class="mb-0" style="color: rgba(255,255,255,0.8);">6 Departments</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="card border-2 h-100">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <div class="quick-link-icon bg-gradient-blue me-3" style="width: 48px; height: 48px; font-size: 20px;">
+                                            <i class="bi bi-building"></i>
+                                        </div>
+                                        <div>
+                                            <h5 style="color: #1e3a8a;">Physics</h5>
+                                            <p class="text-secondary small mb-0">Advanced research in quantum mechanics and applied physics</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-2 h-100">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <div class="quick-link-icon bg-gradient-blue me-3" style="width: 48px; height: 48px; font-size: 20px;">
+                                            <i class="bi bi-building"></i>
+                                        </div>
+                                        <div>
+                                            <h5 style="color: #1e3a8a;">Chemistry</h5>
+                                            <p class="text-secondary small mb-0">Organic, inorganic, and physical chemistry programs</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-2 h-100">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <div class="quick-link-icon bg-gradient-blue me-3" style="width: 48px; height: 48px; font-size: 20px;">
+                                            <i class="bi bi-building"></i>
+                                        </div>
+                                        <div>
+                                            <h5 style="color: #1e3a8a;">Mathematics</h5>
+                                            <p class="text-secondary small mb-0">Pure and applied mathematics with computational focus</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-2 h-100">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <div class="quick-link-icon bg-gradient-blue me-3" style="width: 48px; height: 48px; font-size: 20px;">
+                                            <i class="bi bi-building"></i>
+                                        </div>
+                                        <div>
+                                            <h5 style="color: #1e3a8a;">Environmental Sciences</h5>
+                                            <p class="text-secondary small mb-0">Sustainability and environmental management</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Engineering -->
+            <div class="card mb-4">
+                <div class="dept-category-header bg-gradient-purple">
+                    <div class="d-flex align-items-center">
+                        <div style="width: 48px; height: 48px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 16px;">
+                            <i class="bi bi-laptop fs-4"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-1">Engineering & Technology</h4>
+                            <p class="mb-0" style="color: rgba(255,255,255,0.8);">4 Departments</p>
+                        </div>
+                    </div>
+                </div>
+            <!-- ✅ UIET IMAGE ADDED (ONLY THIS PART IS NEW) -->
+            <div class="card mb-4">
+            <img src="uiet.jpg"
+             class="img-fluid rounded"
+             style="max-height:300px; object-fit:cover;"
+             alt="UIET">
+           </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="card border-2 h-100">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <div class="quick-link-icon bg-gradient-purple me-3" style="width: 48px; height: 48px; font-size: 20px;">
+                                            <i class="bi bi-building"></i>
+                                        </div>
+                                        <div>
+                                            <h5 style="color: #1e3a8a;">Computer Science & IT</h5>
+                                            <p class="text-secondary small mb-0">Software development, AI, and data science</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-2 h-100">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <div class="quick-link-icon bg-gradient-purple me-3" style="width: 48px; height: 48px; font-size: 20px;">
+                                            <i class="bi bi-building"></i>
+                                        </div>
+                                        <div>
+                                            <h5 style="color: #1e3a8a;">Electronics</h5>
+                                            <p class="text-secondary small mb-0">VLSI, embedded systems, and communication</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="card bg-gradient-blue text-white text-center p-4">
+                        <h2 class="mb-2">24+</h2>
+                        <div style="color: #dbeafe;">Total Departments</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-gradient-green text-white text-center p-4">
+                        <h2 class="mb-2">6</h2>
+                        <div style="color: rgba(255,255,255,0.8);">Academic Categories</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-gradient-purple text-white text-center p-4">
+                        <h2 class="mb-2">12</h2>
+                        <div style="color: rgba(255,255,255,0.8);">Academic Blocks</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROUTES PAGE -->
+    <div id="routes-page" class="page-section">
+        <div class="container py-5">
+            <div class="mb-4">
+                <h2 style="color: #1e3a8a;">Navigation & Routes</h2>
+                <p class="text-secondary">Get turn-by-turn directions to any location on campus</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="card p-4">
+                        <h5 style="color: #1e3a8a;" class="mb-4">
+                            <i class="bi bi-signpost-2 me-2"></i>Plan Your Route
+                        </h5>
+                        
+                        <div class="mb-3">
+                            <label class="form-label small">From</label>
+                            <select class="form-select" id="fromLocation">
+                                <option selected>Select starting point</option>
+                                <option>Main Gate</option>
+                                <option>Central Library</option>
+                                <option>Science Block</option>
+                                <option>Engineering Block</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small">To</label>
+                            <select class="form-select" id="toLocation">
+                                <option selected>Select destination</option>
+                                <option>Main Gate</option>
+                                <option>Central Library</option>
+                                <option>Science Block</option>
+                                <option>Engineering Block</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small">Travel Mode</label>
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="travelMode" id="walking" checked>
+                                <label class="btn btn-outline-primary" for="walking">
+                                    <i class="bi bi-person-walking"></i> Walking
+                                </label>
+                                <input type="radio" class="btn-check" name="travelMode" id="shuttle">
+                                <label class="btn btn-outline-primary" for="shuttle">
+                                    <i class="bi bi-bus-front"></i> Shuttle
+                                </label>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary w-100" onclick="showRoute()">Find Route</button>
+
+                        <div id="routeInfo" class="mt-3 p-3 rounded" style="background: #dbeafe; border: 1px solid #93c5fd; display: none;">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-clock text-primary me-2"></i>
+                                <span style="color: #1e3a8a;">Estimated Time</span>
+                            </div>
+                            <h3 class="text-primary mb-1">8 mins</h3>
+                            <small class="text-secondary">Distance: 620 meters</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-8">
+                    <div class="card mb-4" style="height: 320px;">
+                        <div class="h-100 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #f0fdf4, #dbeafe, #f1f5f9);">
+                            <div class="text-center">
+                                <div class="mb-3" style="width: 80px; height: 80px; background: #dbeafe; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                                    <i class="bi bi-signpost-2" style="font-size: 40px; color: #3b82f6;"></i>
+                                </div>
+                                <h5 style="color: #1e3a8a;">Select locations to view route</h5>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-gradient-blue text-white p-4">
+                        <h5 class="mb-3">Navigation Tips</h5>
+                        <div style="color: #dbeafe;">
+                            <p class="mb-2">• Campus shuttle runs every 15 minutes during college hours</p>
+                            <p class="mb-2">• Walking is recommended for distances under 500 meters</p>
+                            <p class="mb-2">• Main pathways are well-lit and accessible 24/7</p>
+                            <p class="mb-0">• Use landmarks like auditorium and library for easy navigation</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FACILITIES PAGE -->
+    <div id="facilities-page" class="page-section">
+        <div class="container py-5">
+            <div class="mb-4">
+                <h2 style="color: #1e3a8a;">Hostels & Facilities</h2>
+                <p class="text-secondary">On-campus accommodation and world-class facilities for students</p>
+            </div>
+
+            <h5 class="mb-3"><i class="bi bi-building-gear text-primary me-2"></i>Campus Hostels</h5>
+            <div class="row g-4 mb-5">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card">
+                        <div class="bg-gradient-blue text-white p-4">
+                            <div style="width: 48px; height: 48px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                                <i class="bi bi-building-gear fs-4"></i>
+                            </div>
+                            <h5 class="mb-1">Boys Hostel - Block A</h5>
+                            <small style="color: rgba(255,255,255,0.8);">Boys Hostel</small>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-people text-secondary me-2"></i>
+                                <span>250 Students</span>
+                            </div>
+                            <small class="text-secondary d-block mb-2">Facilities:</small>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge bg-light text-dark">Wi-Fi</span>
+                                <span class="badge bg-light text-dark">Common Room</span>
+                                <span class="badge bg-light text-dark">Reading Room</span>
+                                <span class="badge bg-light text-dark">Mess</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="card">
+                        <div class="bg-gradient-purple text-white p-4">
+                            <div style="width: 48px; height: 48px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                                <i class="bi bi-building-gear fs-4"></i>
+                            </div>
+                            <h5 class="mb-1">Girls Hostel - Block A</h5>
+                            <small style="color: rgba(255,255,255,0.8);">Girls Hostel</small>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-people text-secondary me-2"></i>
+                                <span>180 Students</span>
+                            </div>
+                            <small class="text-secondary d-block mb-2">Facilities:</small>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge bg-light text-dark">Wi-Fi</span>
+                                <span class="badge bg-light text-dark">Common Room</span>
+                                <span class="badge bg-light text-dark">Security</span>
+                                <span class="badge bg-light text-dark">Mess</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="card">
+                        <div class="bg-gradient-green text-white p-4">
+                            <div style="width: 48px; height: 48px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                                <i class="bi bi-building-gear fs-4"></i>
+                            </div>
+                            <h5 class="mb-1">International Students Hostel</h5>
+                            <small style="color: rgba(255,255,255,0.8);">International</small>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-people text-secondary me-2"></i>
+                                <span>100 Students</span>
+                            </div>
+                            <small class="text-secondary d-block mb-2">Facilities:</small>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge bg-light text-dark">Wi-Fi</span>
+                                <span class="badge bg-light text-dark">Cultural Center</span>
+                                <span class="badge bg-light text-dark">Common Kitchen</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="mb-3"><i class="bi bi-trophy text-primary me-2"></i>Campus Facilities</h5>
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="row g-0">
+                            <div class="col-md-5">
+                                <img src="library.jpg"
+                                 class="img-fluid h-100 object-fit-cover" alt="Library">
+                            </div>
+                            <div class="col-md-7">
+                                <div class="card-body">
+                                    <div class="quick-link-icon bg-gradient-blue mb-3" style="width: 48px; height: 48px; font-size: 20px;">
+                                        <i class="bi bi-book"></i>
+                                    </div>
+                                    <h5 style="color: #1e3a8a;">Central Library</h5>
+                                    <p class="text-secondary small">Over 2 lakh books, e-journals, and digital resources</p>
+                                    <small class="text-secondary">
+                                        <i class="bi bi-clock me-1"></i>Mon-Sat: 8:00 AM - 11:00 PM
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="row g-0">
+                            <div class="col-md-5">
+                                <img src="auditorium.jpg"
+                                class="img-fluid h-100 object-fit-cover" alt="Auditorium">
+                            </div>
+                            <div class="col-md-7">
+                                <div class="card-body">
+                                    <div class="quick-link-icon bg-gradient-green mb-3" style="width: 48px; height: 48px; font-size: 20px;">
+                                        <i class="bi bi-trophy"></i>
+                                    </div>
+                                    <h5 style="color: #1e3a8a;">Sports Complex</h5>
+                                    <p class="text-secondary small">Cricket, Football, Basketball, Tennis, and Indoor Games</p>
+                                    <small class="text-secondary">
+                                        <i class="bi bi-clock me-1"></i>Mon-Sat: 6:00 AM - 8:00 PM
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BUS SCHEDULE PAGE -->
+    <div id="bus-page" class="page-section">
+        <div class="container py-5">
+            <div class="mb-4">
+                <h2 style="color: #1e3a8a;">Campus Shuttle Schedule</h2>
+                <p class="text-secondary">Real-time bus schedules and route information for BBAU campus</p>
+            </div>
+
+            <div class="card bg-gradient-green text-white p-4 mb-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center">
+                            <div style="width: 48px; height: 48px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items-center; justify-content: center; margin-right: 16px;">
+                                <i class="bi bi-bus-front fs-4"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1">All Services Active</h5>
+                                <p class="mb-0" style="color: rgba(255,255,255,0.8);">Campus shuttles are running on schedule</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <h2 class="mb-0">3</h2>
+                        <small style="color: rgba(255,255,255,0.8);">Active Routes</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <h5 class="mb-3"><i class="bi bi-bus-front text-primary me-2"></i>Shuttle Routes</h5>
+                    
+                    <div class="card mb-4">
+                        <div class="bg-gradient-blue text-white p-4">
+                            <h5 class="mb-2">Route A: Main Campus Loop</h5>
+                            <div class="d-flex gap-3" style="color: rgba(255,255,255,0.9);">
+                                <small><i class="bi bi-clock me-1"></i>Every 15 minutes</small>
+                                <small>7:00 AM - 9:00 PM</small>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <small class="text-secondary d-block mb-2">Stops:</small>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge bg-light text-dark border">
+                                    <i class="bi bi-geo-alt me-1 text-primary"></i>Main Gate
+                                </span>
+                                <span class="badge bg-light text-dark border">
+                                    <i class="bi bi-geo-alt me-1 text-primary"></i>Admin Block
+                                </span>
+                                <span class="badge bg-light text-dark border">
+                                    <i class="bi bi-geo-alt me-1 text-primary"></i>Science Block
+                                </span>
+                                <span class="badge bg-light text-dark border">
+                                    <i class="bi bi-geo-alt me-1 text-primary"></i>Library
+                                </span>
+                                <span class="badge bg-light text-dark border">
+                                    <i class="bi bi-geo-alt me-1 text-primary"></i>Hostels
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="bg-gradient-purple text-white p-4">
+                            <h5 class="mb-2">Route C: Hostel Shuttle</h5>
+                            <div class="d-flex gap-3" style="color: rgba(255,255,255,0.9);">
+                                <small><i class="bi bi-clock me-1"></i>Every 10 minutes</small>
+                                <small>6:30 AM - 10:00 PM</small>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <small class="text-secondary d-block mb-2">Stops:</small>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge bg-light text-dark border">
+                                    <i class="bi bi-geo-alt me-1 text-primary"></i>Boys Hostel 1
+                                </span>
+                                <span class="badge bg-light text-dark border">
+                                    <i class="bi bi-geo-alt me-1 text-primary"></i>Girls Hostel 1
+                                </span>
+                                <span class="badge bg-light text-dark border">
+                                    <i class="bi bi-geo-alt me-1 text-primary"></i>Library
+                                </span>
+                                <span class="badge bg-light text-dark border">
+                                    <i class="bi bi-geo-alt me-1 text-primary"></i>Cafeteria
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card p-4 mb-3">
+                        <h6 class="mb-3"><i class="bi bi-exclamation-circle text-primary me-2"></i>Service Alerts</h6>
+                        <div class="p-3 rounded mb-2" style="background: #dbeafe; border: 2px solid #93c5fd;">
+                            <p class="small mb-1">Route A: Extended service during examination period</p>
+                            <small class="text-secondary">2 hours ago</small>
+                        </div>
+                        <div class="p-3 rounded" style="background: #d1fae5; border: 2px solid #6ee7b7;">
+                            <p class="small mb-1">All shuttle services running on schedule</p>
+                            <small class="text-secondary">Just now</small>
+                        </div>
+                    </div>
+
+                    <div class="card bg-gradient-blue text-white p-4">
+                        <h6 class="mb-3">Shuttle Information</h6>
+                        <div style="color: #dbeafe; font-size: 14px;">
+                            <p class="mb-2">• All shuttles are air-conditioned</p>
+                            <p class="mb-2">• Free service for all students and staff</p>
+                            <p class="mb-2">• Wheelchair accessible buses on Route A</p>
+                            <p class="mb-0">• Emergency contact: +91-522-XXXXXX</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ABOUT PAGE -->
+    <div id="about-page" class="page-section">
+        <div class="container py-5">
+            <div class="mb-4">
+                <h2 style="color: #1e3a8a;">About BBAU</h2>
+                <p class="text-secondary">Babasaheb Bhimrao Ambedkar University, Lucknow</p>
+            </div>
+
+            <div class="card mb-4">
+                <img src="bbau logo.jpg"
+                 class="card-img-top" style="height:320px;object-fit:cover;">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="quick-link-icon bg-gradient-blue me-3" style="width: 56px; height: 56px; font-size: 24px;">
+                            <i class="bi bi-bank2"></i>
+                        </div>
+                        <div>
+                            <h4 style="color: #1e3a8a;">Babasaheb Bhimrao Ambedkar University</h4>
+                            <p class="text-secondary mb-0">
+                                <i class="bi bi-geo-alt me-1"></i>
+                                Vidya Vihar, Raebareli Road, Lucknow, Uttar Pradesh
+                            </p>
+                        </div>
+                    </div>
+                    <p class="text-secondary">
+                        Babasaheb Bhimrao Ambedkar University (BBAU) is a Central University located in Lucknow, 
+                        the capital city of Uttar Pradesh. Established in 1996 as Babasaheb Bhimrao Ambedkar University 
+                        by the Government of Uttar Pradesh, it was later upgraded to a Central University in 2009 
+                        under the Central Universities Act. The university is named after Dr. B.R. Ambedkar, the 
+                        principal architect of the Indian Constitution and a champion of social justice and equality.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card text-center p-4">
+                        <i class="bi bi-award text-primary fs-1 mb-2"></i>
+                        <h3 class="text-primary mb-1">1996</h3>
+                        <small class="text-secondary">Established</small>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card text-center p-4">
+                        <i class="bi bi-people text-primary fs-1 mb-2"></i>
+                        <h3 class="text-primary mb-1">15,000+</h3>
+                        <small class="text-secondary">Students</small>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card text-center p-4">
+                        <i class="bi bi-book text-primary fs-1 mb-2"></i>
+                        <h3 class="text-primary mb-1">24+</h3>
+                        <small class="text-secondary">Departments</small>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card text-center p-4">
+                        <i class="bi bi-person-badge text-primary fs-1 mb-2"></i>
+                        <h3 class="text-primary mb-1">500+</h3>
+                        <small class="text-secondary">Faculty</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-lg-6">
+                    <div class="card p-4 h-100">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="quick-link-icon bg-gradient-blue me-3" style="width: 48px; height: 48px; font-size: 20px;">
+                                <i class="bi bi-bullseye"></i>
+                            </div>
+                            <h4 style="color: #1e3a8a;">Mission</h4>
+                        </div>
+                        <p class="text-secondary mb-3">
+                            To provide quality education and foster research in various disciplines of knowledge, 
+                            with special focus on promoting social justice, inclusivity, and empowerment of the 
+                            marginalized sections of society.
+                        </p>
+                        <p class="text-secondary">
+                            The university strives to create a learning environment that encourages critical thinking, 
+                            innovation, and holistic development of students to make them responsible citizens and 
+                            leaders of tomorrow.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card p-4 h-100">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="quick-link-icon bg-gradient-purple me-3" style="width: 48px; height: 48px; font-size: 20px;">
+                                <i class="bi bi-eye"></i>
+                            </div>
+                            <h4 style="color: #1e3a8a;">Vision</h4>
+                        </div>
+                        <p class="text-secondary mb-3">
+                            To emerge as a world-class center of excellence in higher education and research, 
+                            committed to the ideals of Dr. B.R. Ambedkar - equality, social justice, and nation-building.
+                        </p>
+                        <p class="text-secondary">
+                            The university envisions creating a knowledge society that is inclusive, progressive, 
+                            and contributes meaningfully to national and global development through cutting-edge 
+                            research and quality education.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="card bg-gradient-blue text-white p-4">
+                        <i class="bi bi-geo-alt fs-2 mb-2" style="color: #dbeafe;"></i>
+                        <h6 class="mb-2">Location</h6>
+                        <small style="color: #dbeafe;">
+                            Vidya Vihar, Raebareli Road<br>
+                            Lucknow - 226025<br>
+                            Uttar Pradesh, India
+                        </small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-gradient-purple text-white p-4">
+                        <i class="bi bi-globe fs-2 mb-2" style="color: rgba(255,255,255,0.8);"></i>
+                        <h6 class="mb-2">Website</h6>
+                        <small style="color: rgba(255,255,255,0.8);">
+                            www.bbau.ac.in<br>
+                            Email: info@bbau.ac.in<br>
+                            Phone: +91-522-XXXXXX
+                        </small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-gradient-green text-white p-4">
+                        <i class="bi bi-award fs-2 mb-2" style="color: rgba(255,255,255,0.8);"></i>
+                        <h6 class="mb-2">Accreditation</h6>
+                        <small style="color: rgba(255,255,255,0.8);">
+                            NAAC A+ Grade<br>
+                            UGC Recognized<br>
+                            Central University Status
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTACT PAGE -->
+    <div id="contact-page" class="page-section">
+        <div class="container py-5">
+            <div class="mb-4">
+                <h2 style="color: #1e3a8a;">Contact Us</h2>
+                <p class="text-secondary">Get in touch with us for any queries or assistance</p>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card">
+                        <div class="bg-gradient-blue p-3">
+                            <i class="bi bi-geo-alt text-white fs-3"></i>
+                        </div>
+                        <div class="card-body">
+                            <h6 style="color: #1e3a8a;" class="mb-3">Address</h6>
+                            <small class="text-secondary">
+                                Babasaheb Bhimrao Ambedkar University<br>
+                                Vidya Vihar, Raebareli Road<br>
+                                Lucknow - 226025, UP, India
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card">
+                        <div class="bg-gradient-green p-3">
+                            <i class="bi bi-telephone text-white fs-3"></i>
+                        </div>
+                        <div class="card-body">
+                            <h6 style="color: #1e3a8a;" class="mb-3">Phone</h6>
+                            <small class="text-secondary">
+                                Main: +91-522-2440821<br>
+                                Admission: +91-522-2440818<br>
+                                Emergency: +91-522-2440800
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card">
+                        <div class="bg-gradient-purple p-3">
+                            <i class="bi bi-envelope text-white fs-3"></i>
+                        </div>
+                        <div class="card-body">
+                            <h6 style="color: #1e3a8a;" class="mb-3">Email</h6>
+                            <small class="text-secondary">
+                                General: info@bbau.ac.in<br>
+                                Admissions: admissions@bbau.ac.in<br>
+                                Support: support@bbau.ac.in
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card">
+                        <div class="bg-gradient-orange p-3">
+                            <i class="bi bi-clock text-white fs-3"></i>
+                        </div>
+                        <div class="card-body">
+                            <h6 style="color: #1e3a8a;" class="mb-3">Office Hours</h6>
+                            <small class="text-secondary">
+                                Mon-Fri: 9:00 AM - 5:00 PM<br>
+                                Saturday: 9:00 AM - 1:00 PM<br>
+                                Sunday: Closed
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="card p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <i class="bi bi-chat-dots text-primary fs-4 me-2"></i>
+                            <h4 style="color: #1e3a8a;">Send us a Message</h4>
+                        </div>
+                        <form onsubmit="handleContactSubmit(event)">
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small">Your Name</label>
+                                    <input type="text" class="form-control" placeholder="Enter your name" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small">Email Address</label>
+                                    <input type="email" class="form-control" placeholder="Enter your email" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small">Subject</label>
+                                <input type="text" class="form-control" placeholder="What is this regarding?" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small">Message</label>
+                                <textarea class="form-control" rows="5" placeholder="Tell us more about your query..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-send me-2"></i>Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card p-4 mb-3">
+                        <h6 style="color: #1e3a8a;" class="mb-3">Department Contacts</h6>
+                        <div class="d-grid gap-2">
+                            <div class="p-2 rounded" style="background: #f8fafc;">
+                                <small class="d-block mb-1">Admissions Office</small>
+                                <small class="text-primary">
+                                    <i class="bi bi-telephone me-1"></i>+91-522-2440818
+                                </small>
+                            </div>
+                            <div class="p-2 rounded" style="background: #f8fafc;">
+                                <small class="d-block mb-1">Examination Cell</small>
+                                <small class="text-primary">
+                                    <i class="bi bi-telephone me-1"></i>+91-522-2440819
+                                </small>
+                            </div>
+                            <div class="p-2 rounded" style="background: #f8fafc;">
+                                <small class="d-block mb-1">Library</small>
+                                <small class="text-primary">
+                                    <i class="bi bi-telephone me-1"></i>+91-522-2440825
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-gradient-blue text-white p-4">
+                        <h6 class="mb-3">Quick Tips</h6>
+                        <small style="color: #dbeafe;">
+                            <p class="mb-2">• Response time: Usually within 24-48 hours</p>
+                            <p class="mb-2">• For urgent matters, please call directly</p>
+                            <p class="mb-0">• Visit campus during office hours for in-person assistance</p>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-white py-5">
+        <div class="container">
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="brand-logo me-2">BBAU</div>
+                        <span>Campus Navigator</span>
+                    </div>
+                    <p style="color: #dbeafe; font-size: 14px;">
+                        Your smart guide to navigating Babasaheb Bhimrao Ambedkar University campus.
+                    </p>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="mb-3">Quick Links</h6>
+                    <div class="d-grid gap-2" style="font-size: 14px;">
+                        <a href="#" onclick="navigateTo('map')">Campus Map</a>
+                        <a href="#" onclick="navigateTo('departments')">Departments</a>
+                        <a href="#" onclick="navigateTo('facilities')">Facilities</a>
+                        <a href="#" onclick="navigateTo('bus')">Bus Schedule</a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="mb-3">University</h6>
+                    <div class="d-grid gap-2" style="font-size: 14px;">
+                        <a href="#" onclick="navigateTo('about')">About BBAU</a>
+                        <a href="#" onclick="navigateTo('contact')">Contact Us</a>
+                        <a href="#">Admissions</a>
+                        <a href="#">Careers</a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="mb-3">Contact</h6>
+                    <p style="color: #dbeafe; font-size: 14px;">
+                        Vidya Vihar, Raebareli Road<br>
+                        Lucknow - 226025, UP<br>
+                        Phone: +91-522-2440821<br>
+                        Email: info@bbau.ac.in
+                    </p>
+                </div>
+            </div>
+            <div class="border-top pt-4 text-center" style="border-color: #1e40af !important; color: #dbeafe; font-size: 14px;">
+                <p class="mb-0">© 2025 Babasaheb Bhimrao Ambedkar University, Lucknow. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        // Page Navigation
+        function navigateTo(page) {
+            // Hide all pages
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(page + '-page').classList.add('active');
+            
+            // Update nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`[data-page="${page}"]`)?.classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+            
+            // Close mobile menu if open
+            const navbarCollapse = document.querySelector('.navbar-collapse');
+            if (navbarCollapse.classList.contains('show')) {
+                bootstrap.Collapse.getInstance(navbarCollapse).hide();
+            }
+            
+            return false;
+        }
+
+        // Show Route Function
+        function showRoute() {
+            const from = document.getElementById('fromLocation').value;
+            const to = document.getElementById('toLocation').value;
+            
+            if (from !== 'Select starting point' && to !== 'Select destination') {
+                document.getElementById('routeInfo').style.display = 'block';
+            } else {
+                alert('Please select both starting point and destination');
+            }
+        }
+
+        // Contact Form Submit
+        function handleContactSubmit(event) {
+            event.preventDefault();
+            alert('Thank you for your message! We will get back to you soon.');
+            event.target.reset();
+            return false;
+        }
+
+        // Prevent default anchor behavior
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('a[href="#"]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
